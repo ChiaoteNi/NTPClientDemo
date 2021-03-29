@@ -74,6 +74,7 @@ public final class NTPClock {
         shared.ntpClient.listenNewCorrectedTime { result in
             switch result {
             case .success(let correctedTime):
+                shared.correctedTime = correctedTime
                 handler(correctedTime.currentTime)
             case .failure(let error):
                 print(error)

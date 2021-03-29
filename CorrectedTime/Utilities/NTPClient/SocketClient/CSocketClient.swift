@@ -20,6 +20,12 @@ final class CSocketClient {
     
     private var currentSource: CFRunLoopSource?
     private var connectHandler: ConnectHandler?
+    private(set) var isConnected: Bool = false {
+        didSet {
+            connectHandler?(isConnected)
+            connectHandler = nil
+        }
+    }
     
     private var receiveHandlers: [ReceiveHandler] = []
     private let receiveQueue: DispatchQueue = .init(
@@ -37,10 +43,8 @@ final class CSocketClient {
             .takeUnretainedValue()
         
         guard callbackType != .writeCallBack else {
-            if let handler = socketClient.connectHandler {
-                socketClient.connectHandler = nil
-                handler(true)
-            }
+            socketClient.isConnected = true
+            
             if let packet = socketClient.preparePacket?(),
                let ip = socketClient.ips.first {
                 let ipData = socketClient.getAddressData(address: ip)
@@ -63,6 +67,8 @@ final class CSocketClient {
     }
     
     func start(then handler: ((_ success: Bool) -> Void)?) {
+        isConnected = false
+        
         guard let ip = ips.first ?? getServerAddress(host: host).first else {
             handler?(false)
             return
@@ -111,12 +117,9 @@ final class CSocketClient {
         let ipData = getAddressData(address: ip)
         let error = CFSocketConnectToAddress(socket, ipData, 6.0)
         switch error {
-        case .success:
-            break
-        case .error, .timeout:
-            handler?(false)
-        @unknown default:
-            handler?(false)
+        case .success:          break
+        case .error, .timeout:  isConnected = false
+        @unknown default:       isConnected = false
         }
     }
     

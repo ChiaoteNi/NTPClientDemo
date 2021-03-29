@@ -23,7 +23,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         NTPClock.configuration(
             .init(
-                autoSyncTimePeriod: 3,
+                autoSyncTimePeriod: 60,
                 isAutoRetryEnable: true
             )
         )
@@ -40,15 +40,15 @@ extension ViewController {
     
     @IBAction private func retry() {
 //        TimeAPI().getTime()
-//        self.timer?.invalidate()
-//        self.timer = Timer.scheduledTimer(
-//            timeInterval: 1,
-//            target: self,
-//            selector: #selector(self.updateDisplayTime),
-//            userInfo: nil,
-//            repeats: true
-//        )
-//        self.timer?.fire()
+        self.timer?.invalidate()
+        self.timer = Timer.scheduledTimer(
+            timeInterval: 1,
+            target: self,
+            selector: #selector(self.updateDisplayTime),
+            userInfo: nil,
+            repeats: true
+        )
+        self.timer?.fire()
         updateDisplayTime()
     }
 }

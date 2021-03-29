@@ -11,6 +11,8 @@ protocol NTPSocketClientSpec {
 
     init(host: String)
     
+    var isConnected: Bool { get }
+    
     func start(then handler: ((_ success: Bool) -> Void)?)
     func listen(then handler: @escaping (_ data: Data) -> Void)
     func close()
@@ -28,6 +30,10 @@ final class NTPClient {
     private var correctedTime: CorrectedTime?
     private var lastBoottime: TimeInterval?
     
+    private let operationQueue: DispatchQueue = .init(
+        label: "time.beanfun.com.NTPTimeSync",
+        qos: .utility
+    )
     private var retryCount: Int = 0
     
     init() {
@@ -39,25 +45,29 @@ final class NTPClient {
     }
     
     func start() {
-        socketClinet.start { [weak self] connectSuccess in
-            if connectSuccess {
-                guard self?.hasUnsendPacket == true else { return }
-                self?.send()
-            } else {
-                self?.socketClinet.close()
-                let retryCount = self?.retryCount ?? 0
-                let deadline: DispatchTime = .now() + .seconds(retryCount * 2 + 1)
-                DispatchQueue
-                    .global()
-                    .asyncAfter(deadline: deadline) {
-                        self?.start()
-                    }
+        operationQueue.async { [weak self] in
+            self?.socketClinet.start {connectSuccess in
+                if connectSuccess {
+                    guard self?.hasUnsendPacket == true else { return }
+                    self?.send()
+                } else {
+                    self?.socketClinet.close()
+                    let retryCount = self?.retryCount ?? 0
+                    let deadline: DispatchTime = .now() + .seconds(retryCount * 2 + 1)
+                    DispatchQueue
+                        .global()
+                        .asyncAfter(deadline: deadline) {
+                            self?.start()
+                        }
+                }
             }
         }
     }
     
     func close() {
-        socketClinet.close()
+        operationQueue.async { [weak self] in
+            self?.socketClinet.close()
+        }
     }
     
     func getTime() -> Date? {
@@ -67,41 +77,44 @@ final class NTPClient {
     
     func listenNewCorrectedTime(then handler: @escaping (_ result: Result<CorrectedTime, Error>) -> Void) {
         socketClinet.listen { [weak self] data in
-            guard let self = self else { return }
-            guard let packet = try? NTPPacket(
-                    data: data,
-                    destinationTime: CorrectedTime.currentTime()
-            ) else {
-                return handler(.failure(NTPError(code: 500, message: "packet decode fail")))
+            self?.operationQueue.async {
+                guard let self = self else { return }
+                guard let packet = try? NTPPacket(
+                        data: data,
+                        destinationTime: CorrectedTime.currentTime()
+                ) else {
+                    return handler(.failure(NTPError(code: 500, message: "packet decode fail")))
+                }
+                
+                // [ ( T2- T1 ) + ( T3 – T4 ) ] / 2
+                let offset = ((packet.receiveTime - packet.originTime)
+                                + (packet.transmitTime - packet.destinationTime)) / 2
+                
+                let newCorrectedTime: CorrectedTime = .init(
+                    offset: offset,
+                    originBoottime: self.lastBoottime ?? CorrectedTime.getCurrentBoottime()
+                )
+                
+                DispatchQueue.main.async {
+                    self.correctedTime = newCorrectedTime
+                }
+                handler(.success(newCorrectedTime))
             }
-            
-            // [ ( T2- T1 ) + ( T3 – T4 ) ] / 2
-            let offset = ((packet.receiveTime - packet.originTime)
-                            + (packet.transmitTime - packet.destinationTime)) / 2
-            
-            let newCorrectedTime: CorrectedTime = .init(
-                offset: offset,
-                originBoottime: self.lastBoottime ?? CorrectedTime.getCurrentBoottime()
-            )
-            
-            self.correctedTime = newCorrectedTime
-            handler(.success(newCorrectedTime))
         }
     }
     
     func send() {
-        socketClinet.start(then: { [weak self] success in
-            guard success else {
+        operationQueue.async { [weak self] in
+            guard self?.socketClinet.isConnected == true else {
                 self?.hasUnsendPacket = true
                 return
             }
-            self?.socketClinet.send(packet: { [weak self] in
+            self?.socketClinet.send(packet: {
                 var packet = NTPPacket()
                 let data = packet.prepareToSend()
                 self?.lastBoottime = CorrectedTime.getCurrentBoottime()
                 return data
             })
-        })
-        
+        }
     }
 }
