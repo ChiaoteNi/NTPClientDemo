@@ -10,11 +10,16 @@ import Foundation
 final class CSocketClient {
     
     typealias ReceiveHandler = (_ data: Data) -> Void
+    typealias ConnectHandler = (_ success: Bool) -> Void
     
     private var socket: CFSocket?
     private var currentAddressData: CFData?
+    
+    private let host: String
     private var ips: [String]
+    
     private var currentSource: CFRunLoopSource?
+    private var connectHandler: ConnectHandler?
     
     private var receiveHandlers: [ReceiveHandler] = []
     private let receiveQueue: DispatchQueue = .init(
@@ -32,6 +37,10 @@ final class CSocketClient {
             .takeUnretainedValue()
         
         guard callbackType != .writeCallBack else {
+            if let handler = socketClient.connectHandler {
+                socketClient.connectHandler = nil
+                handler(true)
+            }
             if let packet = socketClient.preparePacket?(),
                let ip = socketClient.ips.first {
                 let ipData = socketClient.getAddressData(address: ip)
@@ -49,14 +58,20 @@ final class CSocketClient {
     }
     
     init(host: String = "time.apple.com") {
+        self.host = host
         ips = getServerAddress(host: host)
     }
     
-    func start() {
-        guard let ip = ips.first else {
-            return assert(false)
+    func start(then handler: ((_ success: Bool) -> Void)?) {
+        guard let ip = ips.first ?? getServerAddress(host: host).first else {
+            handler?(false)
+            return
         }
-        guard socket == nil, currentSource == nil else { return }
+        guard socket == nil, currentSource == nil else {
+            handler?(false)
+            return
+        }
+        connectHandler = handler
         
         let info = UnsafeMutableRawPointer(
             Unmanaged<CSocketClient>
@@ -72,7 +87,8 @@ final class CSocketClient {
         )
         
         let types = CFSocketCallBackType.dataCallBack.rawValue |
-            CFSocketCallBackType.writeCallBack.rawValue
+            CFSocketCallBackType.writeCallBack.rawValue |
+            CFSocketCallBackType.connectCallBack.rawValue
         
         self.socket = CFSocketCreate(
             nil,
@@ -93,7 +109,15 @@ final class CSocketClient {
         self.currentSource = runLoopSource
         
         let ipData = getAddressData(address: ip)
-        CFSocketConnectToAddress(socket, ipData, 6.0)
+        let error = CFSocketConnectToAddress(socket, ipData, 6.0)
+        switch error {
+        case .success:
+            break
+        case .error, .timeout:
+            handler?(false)
+        @unknown default:
+            handler?(false)
+        }
     }
     
     func listen(then handler: @escaping ReceiveHandler) {

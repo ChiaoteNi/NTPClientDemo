@@ -1,9 +1,11 @@
-import Foundation
+//
+//  NTPProtocol.swift
+//  CorrectedTime
+//
+//  Created by 倪僑德 on 2021/2/13.
+//
 
-struct NTPParsingError: Error {
-    let code: Int?
-    let message: String
-}
+import Foundation
 
 enum LeapIndicator: Int8 {
     case noWarning

@@ -84,7 +84,10 @@ struct NTPPacket {
     
     init(data: Data, destinationTime: TimeInterval) throws {
         guard data.count >= 48 else {
-            throw NTPParsingError.invalidNTPPDU("Invalid PDU length: \(data.count)")
+            throw NTPError(
+                code: 500,
+                message: "packet format not correct, packet size should not be less than 48bytes, but the packet is \(data.count) bytes only"
+            )
         }
 
         let configs: Int8 = getByte(from: data, at: 0) ?? 0
@@ -141,7 +144,7 @@ extension NTPPacket {
 
     private static func dateFromNTPFormat(_ time: UInt64) -> TimeInterval {
         let integer = Double(time >> 32)
-        let decimal = Double(time & 0xffffffff) / 4294967296.0  // 100_000_000的16進制
+        let decimal = Double(time & 0xffffffff) / 4294967296.0  // 100,000,000的16進制
         return integer - epochTimeInterval + decimal
     }
 
@@ -151,14 +154,11 @@ extension NTPPacket {
         return integer + decimal
     }
     
-    /// Returns the current time in decimal EPOCH timestamp format.
-    ///
-    /// - returns: The current time in EPOCH timestamp format.
     private func currentTime() -> TimeInterval {
         var current = timeval()
         let systemTimeError = gettimeofday(&current, nil) != 0
         assert(!systemTimeError, "system clock error: sysstem time unavailable")
-        return Double(current.tv_sec) + Double(current.tv_usec) / 1_000_000
+        return Double(current.tv_sec) + Double(current.tv_usec) / 1000000
     }
 }
 
@@ -192,4 +192,9 @@ private func getValue<ValueType: FixedWidthInteger>(from data: Data,
         rawPointer.bindMemory(to: type.self).baseAddress?.pointee
     }
     return data
+}
+
+struct NTPError: Error {
+    let code: Int
+    let message: String
 }

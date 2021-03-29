@@ -8,11 +8,15 @@
 import Foundation
 import Network
 
+@available(iOS 12, *)
 final class NWSocketClient {
     
     typealias ReceiveHandler = (_ data: Data) -> Void
+    typealias ConnectHandler = (_ success: Bool) -> Void
     
     private let connection: NWConnection
+    private var connectHandler: ConnectHandler?
+    
     private var receiveHandlers: [ReceiveHandler] = []
     private let receiveQueue: DispatchQueue = .init(
         label: "time.apple.com.NTPQueue",
@@ -28,17 +32,23 @@ final class NWSocketClient {
             switch newState {
             case .setup:                print("setup")
             case .preparing:            print("preparing")
-            case .ready:                self?.startReceiveMessage()
+            case .ready:
+                self?.connectHandler?(true)
+                self?.startReceiveMessage()
             case .waiting(let error):   print("waiting, \(error)")
             case .cancelled:            print("cancelled")
             case .failed(let error):    print("failed, \(error)")
+                self?.receiveQueue.asyncAfter(deadline: .now() + 3) {
+                    self?.start(then: nil)
+                }
             @unknown default:           print("default")
             }
         }
     }
     
-    func start() {
+    func start(then handler: ((_ success: Bool) -> Void)?) {
         connection.start(queue: receiveQueue)
+        connectHandler = handler
     }
     
     func listen(then handler: @escaping ReceiveHandler) {
@@ -46,7 +56,8 @@ final class NWSocketClient {
     }
     
     func close() {
-        // TODO: implement
+        connection.cancel()
+        connectHandler = nil
     }
     
     func send(packet: @escaping () -> Data) {

@@ -7,6 +7,8 @@
 
 import Foundation
 
+private var anyHost: String = "any host, header 'Date' is part of http protocol"
+
 final class TimeAPI {
     
     var formatter: DateFormatter = {
@@ -16,7 +18,7 @@ final class TimeAPI {
     }()
     
     func getTime() {
-        guard let url = URL(string: "https://www.chiaoni3145951.com/TimeApi.php") else { return }
+        guard let url = URL(string: "anyHost") else { return }
         let request: URLRequest = .init(
             url: url,
             cachePolicy: .reloadIgnoringLocalCacheData,
@@ -26,7 +28,7 @@ final class TimeAPI {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             let dateString = (response as? HTTPURLResponse)?.allHeaderFields["Date"] as? String
             let date = self.convertTimeText(dateString)
-//            print("=======\(date)")
+            print("=======\(String(describing: date))")
         }
         task.resume()
     }

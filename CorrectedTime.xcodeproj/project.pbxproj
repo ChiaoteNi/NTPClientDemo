@@ -21,11 +21,11 @@
 		65CD79BD25D43CA80090D7AC /* NWSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CD79BC25D43CA80090D7AC /* NWSocketClient.swift */; };
 		65CD79C425D79D6F0090D7AC /* NTPPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CD79C325D79D6F0090D7AC /* NTPPacket.swift */; };
 		93531A2B25FC6350005060A8 /* CSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93531A2A25FC6350005060A8 /* CSocketClient.swift */; };
-		D3C1261FD94236412E20C044 /* Pods_CorrectedTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07B93A188CAB037A0E9D1E4A /* Pods_CorrectedTime.framework */; };
+		93971D2126043D7B00D4C371 /* NTPClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93971D2026043D7B00D4C371 /* NTPClock.swift */; };
+		93E857E4261043C5008B7CA0 /* NTPClientCongfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E857E3261043C5008B7CA0 /* NTPClientCongfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		07B93A188CAB037A0E9D1E4A /* Pods_CorrectedTime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CorrectedTime.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		651CE39F25BDD0E600EF1368 /* CorrectedTime.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CorrectedTime.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		651CE3A225BDD0E600EF1368 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		651CE3A425BDD0E600EF1368 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -41,9 +41,9 @@
 		651CE43B25C0510900EF1368 /* TimeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAPI.swift; sourceTree = "<group>"; };
 		65CD79BC25D43CA80090D7AC /* NWSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWSocketClient.swift; sourceTree = "<group>"; };
 		65CD79C325D79D6F0090D7AC /* NTPPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTPPacket.swift; sourceTree = "<group>"; };
-		8FB1F7877ACBC65EFA31DE7F /* Pods-CorrectedTime.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CorrectedTime.release.xcconfig"; path = "Target Support Files/Pods-CorrectedTime/Pods-CorrectedTime.release.xcconfig"; sourceTree = "<group>"; };
-		934F9EF95AA3D33254A7B7BD /* Pods-CorrectedTime.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CorrectedTime.debug.xcconfig"; path = "Target Support Files/Pods-CorrectedTime/Pods-CorrectedTime.debug.xcconfig"; sourceTree = "<group>"; };
 		93531A2A25FC6350005060A8 /* CSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSocketClient.swift; sourceTree = "<group>"; };
+		93971D2026043D7B00D4C371 /* NTPClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTPClock.swift; sourceTree = "<group>"; };
+		93E857E3261043C5008B7CA0 /* NTPClientCongfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTPClientCongfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +51,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3C1261FD94236412E20C044 /* Pods_CorrectedTime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,8 +62,6 @@
 			children = (
 				651CE3A125BDD0E600EF1368 /* CorrectedTime */,
 				651CE3A025BDD0E600EF1368 /* Products */,
-				CDD6C47C4FF3B2D96FFAA1CA /* Pods */,
-				EA6228DF538A01B5AF517988 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -127,6 +124,8 @@
 		651CE42D25BF560100EF1368 /* NTPClient */ = {
 			isa = PBXGroup;
 			children = (
+				93971D2026043D7B00D4C371 /* NTPClock.swift */,
+				93E857E3261043C5008B7CA0 /* NTPClientCongfig.swift */,
 				651CE40625BF316200EF1368 /* NTPClient.swift */,
 				65CD79C325D79D6F0090D7AC /* NTPPacket.swift */,
 				651CE42425BF542900EF1368 /* NTPProtocol.swift */,
@@ -154,23 +153,6 @@
 			path = SocketClient;
 			sourceTree = "<group>";
 		};
-		CDD6C47C4FF3B2D96FFAA1CA /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				934F9EF95AA3D33254A7B7BD /* Pods-CorrectedTime.debug.xcconfig */,
-				8FB1F7877ACBC65EFA31DE7F /* Pods-CorrectedTime.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		EA6228DF538A01B5AF517988 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				07B93A188CAB037A0E9D1E4A /* Pods_CorrectedTime.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -178,7 +160,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 651CE3B325BDD0E700EF1368 /* Build configuration list for PBXNativeTarget "CorrectedTime" */;
 			buildPhases = (
-				85F8A2EA1D5A2308588A8AE5 /* [CP] Check Pods Manifest.lock */,
 				651CE39B25BDD0E600EF1368 /* Sources */,
 				651CE39C25BDD0E600EF1368 /* Frameworks */,
 				651CE39D25BDD0E600EF1368 /* Resources */,
@@ -237,31 +218,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		85F8A2EA1D5A2308588A8AE5 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-CorrectedTime-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		651CE39B25BDD0E600EF1368 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -275,9 +231,11 @@
 				651CE3A325BDD0E600EF1368 /* AppDelegate.swift in Sources */,
 				65CD79BD25D43CA80090D7AC /* NWSocketClient.swift in Sources */,
 				651CE3A525BDD0E600EF1368 /* SceneDelegate.swift in Sources */,
+				93E857E4261043C5008B7CA0 /* NTPClientCongfig.swift in Sources */,
 				651CE42525BF542900EF1368 /* NTPProtocol.swift in Sources */,
 				651CE40725BF316200EF1368 /* NTPClient.swift in Sources */,
 				651CE41D25BF538F00EF1368 /* Data+Bytes.swift in Sources */,
+				93971D2126043D7B00D4C371 /* NTPClock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,7 +379,6 @@
 		};
 		651CE3B425BDD0E700EF1368 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 934F9EF95AA3D33254A7B7BD /* Pods-CorrectedTime.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -442,7 +399,6 @@
 		};
 		651CE3B525BDD0E700EF1368 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8FB1F7877ACBC65EFA31DE7F /* Pods-CorrectedTime.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
